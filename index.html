@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Uma Flor Para Voce</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        background: #000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: "Quicksand", sans-serif;
+        overflow: hidden;
+      }
+
+      .container {
+        position: relative;
+        width: 320px;
+        height: 480px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
+      .scene {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+      }
+
+      /* Grama */
+      .grass {
+        position: absolute;
+        bottom: 0;
+        z-index: 20;
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+      }
+
+      .grass-blade {
+        transform-origin: bottom center;
+      }
+
+      .sway-1 {
+        animation: sway1 4s ease-in-out infinite;
+      }
+      .sway-2 {
+        animation: sway2 3.5s ease-in-out infinite;
+      }
+      .sway-3 {
+        animation: sway3 4.5s ease-in-out infinite;
+      }
+
+      @keyframes sway1 {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        50% {
+          transform: rotate(3deg);
+        }
+      }
+
+      @keyframes sway2 {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        50% {
+          transform: rotate(-3deg);
+        }
+      }
+
+      @keyframes sway3 {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        50% {
+          transform: rotate(2deg);
+        }
+      }
+
+      /* Flor */
+      .flower-container {
+        position: absolute;
+        bottom: 45px;
+        z-index: 10;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .flower-container.visible {
+        opacity: 1;
+      }
+
+      /* Caule */
+      .stem {
+        stroke-dasharray: 220;
+        stroke-dashoffset: 220;
+        transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .flower-container.visible .stem {
+        stroke-dashoffset: 0;
+      }
+
+      /* Folhas do caule */
+      .leaf {
+        opacity: 0;
+        transform: scale(0);
+        transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .leaf-left {
+        transform-origin: 68px 220px;
+        transform: scale(0) rotate(-30deg);
+      }
+
+      .leaf-right {
+        transform-origin: 72px 180px;
+        transform: scale(0) rotate(30deg);
+      }
+
+      .flower-container.phase-1 .leaf-left,
+      .flower-container.phase-2 .leaf-left,
+      .flower-container.phase-3 .leaf-left,
+      .flower-container.phase-4 .leaf-left {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+
+      .flower-container.phase-1 .leaf-right,
+      .flower-container.phase-2 .leaf-right,
+      .flower-container.phase-3 .leaf-right,
+      .flower-container.phase-4 .leaf-right {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+        transition-delay: 0.2s;
+      }
+
+      /* Grupo da flor */
+      .flower-head {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .flower-container.phase-2 .flower-head,
+      .flower-container.phase-3 .flower-head,
+      .flower-container.phase-4 .flower-head {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Petalas */
+      .petal-outer {
+        transform-origin: 70px 75px;
+        transform: scale(0) translateY(0);
+        transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .petal-inner {
+        transform-origin: 70px 75px;
+        transform: scale(0) translateY(0);
+        transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .flower-container.phase-3 .petal-outer,
+      .flower-container.phase-4 .petal-outer {
+        transform: scale(1);
+      }
+
+      .flower-container.phase-3 .petal-inner,
+      .flower-container.phase-4 .petal-inner {
+        transform: scale(1);
+      }
+
+      /* Delays escalonados para as petalas */
+      .petal-outer-0 {
+        transition-delay: 0s;
+      }
+      .petal-outer-1 {
+        transition-delay: 0.08s;
+      }
+      .petal-outer-2 {
+        transition-delay: 0.16s;
+      }
+      .petal-outer-3 {
+        transition-delay: 0.24s;
+      }
+      .petal-outer-4 {
+        transition-delay: 0.32s;
+      }
+      .petal-outer-5 {
+        transition-delay: 0.4s;
+      }
+      .petal-outer-6 {
+        transition-delay: 0.48s;
+      }
+      .petal-outer-7 {
+        transition-delay: 0.56s;
+      }
+
+      .petal-inner-0 {
+        transition-delay: 0.3s;
+      }
+      .petal-inner-1 {
+        transition-delay: 0.36s;
+      }
+      .petal-inner-2 {
+        transition-delay: 0.42s;
+      }
+      .petal-inner-3 {
+        transition-delay: 0.48s;
+      }
+      .petal-inner-4 {
+        transition-delay: 0.54s;
+      }
+      .petal-inner-5 {
+        transition-delay: 0.6s;
+      }
+      .petal-inner-6 {
+        transition-delay: 0.66s;
+      }
+      .petal-inner-7 {
+        transition-delay: 0.72s;
+      }
+
+      /* Centro da flor */
+      .flower-center {
+        transform: scale(0);
+        transform-origin: 70px 75px;
+        transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s;
+      }
+
+      .flower-container.phase-3 .flower-center,
+      .flower-container.phase-4 .flower-center {
+        transform: scale(1);
+      }
+
+      /* Animacao de respiracao das petalas */
+      @keyframes breathe {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.02);
+        }
+      }
+
+      .flower-container.phase-4 .petal-outer ellipse,
+      .flower-container.phase-4 .petal-inner ellipse {
+        animation: breathe 3s ease-in-out infinite;
+      }
+
+      /* Particulas de brilho */
+      .sparkles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+
+      .flower-container.phase-4 .sparkles {
+        opacity: 1;
+      }
+
+      .sparkle {
+        position: absolute;
+        border-radius: 50%;
+        animation: sparkleFloat 2.5s ease-in-out infinite;
+      }
+
+      @keyframes sparkleFloat {
+        0% {
+          opacity: 0;
+          transform: translateY(0) scale(0);
+        }
+        20% {
+          opacity: 1;
+          transform: translateY(-5px) scale(1);
+        }
+        80% {
+          opacity: 1;
+          transform: translateY(-25px) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-35px) scale(0);
+        }
+      }
+
+      /* Botao clique aqui */
+      .click-button {
+        margin-top: 16px;
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 18px;
+        font-family: "Quicksand", sans-serif;
+        font-weight: 300;
+        letter-spacing: 3px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 12px 24px;
+      }
+
+      .click-button:hover {
+        color: rgba(255, 255, 255, 0.9);
+        transform: scale(1.05);
+      }
+
+      .click-button.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* Mensagem */
+      .message {
+        margin-top: 24px;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(15px);
+        transition: all 1s ease;
+        pointer-events: none;
+      }
+
+      .message.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .message-title {
+        color: rgba(255, 182, 193, 0.9);
+        font-size: 20px;
+        font-weight: 400;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+      }
+
+      .message-text {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 15px;
+        max-width: 280px;
+        line-height: 1.6;
+        font-weight: 300;
+      }
+
+      .message-highlight {
+        color: rgba(255, 105, 180, 0.9);
+        font-size: 14px;
+        margin-top: 12px;
+        font-weight: 400;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="scene">
+        <!-- Flor -->
+        <div class="flower-container" id="flowerContainer">
+          <svg
+            width="140"
+            height="300"
+            viewBox="0 0 140 300"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style="overflow: visible"
+          >
+            <defs>
+              <radialGradient id="petalGradient1" cx="50%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#FFD1DC" />
+                <stop offset="50%" stop-color="#FFB6C1" />
+                <stop offset="100%" stop-color="#FF69B4" />
+              </radialGradient>
+              <radialGradient id="petalGradient2" cx="50%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#FFC0CB" />
+                <stop offset="50%" stop-color="#FF91A4" />
+                <stop offset="100%" stop-color="#FF6B8A" />
+              </radialGradient>
+              <radialGradient id="centerGradient" cx="30%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#FFEC8B" />
+                <stop offset="50%" stop-color="#FFD700" />
+                <stop offset="100%" stop-color="#FFA500" />
+              </radialGradient>
+              <linearGradient
+                id="stemGradient"
+                x1="0%"
+                y1="0%"
+                x2="0%"
+                y2="100%"
+              >
+                <stop offset="0%" stop-color="#5a9c4e" />
+                <stop offset="100%" stop-color="#2d5a27" />
+              </linearGradient>
+              <linearGradient
+                id="leafGradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop offset="0%" stop-color="#6ab55e" />
+                <stop offset="100%" stop-color="#3d7a37" />
+              </linearGradient>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            <!-- Caule -->
+            <path
+              class="stem"
+              d="M70 300 Q68 240, 70 180 Q72 140, 70 100"
+              stroke="url(#stemGradient)"
+              stroke-width="5"
+              fill="none"
+              stroke-linecap="round"
+            />
+
+            <!-- Folha esquerda -->
+            <g class="leaf leaf-left">
+              <path
+                d="M68 220 Q35 195, 28 165 Q25 155, 30 150 Q45 165, 55 185 Q62 200, 68 210"
+                fill="url(#leafGradient)"
+              />
+              <path
+                d="M68 218 Q50 200, 40 175"
+                stroke="#3d7a37"
+                stroke-width="1.5"
+                fill="none"
+                opacity="0.6"
+              />
+            </g>
+
+            <!-- Folha direita -->
+            <g class="leaf leaf-right">
+              <path
+                d="M72 180 Q100 160, 112 130 Q115 120, 110 118 Q95 130, 85 150 Q78 165, 72 175"
+                fill="url(#leafGradient)"
+              />
+              <path
+                d="M72 178 Q90 155, 100 135"
+                stroke="#3d7a37"
+                stroke-width="1.5"
+                fill="none"
+                opacity="0.6"
+              />
+            </g>
+
+            <!-- Grupo da flor -->
+            <g class="flower-head">
+              <!-- Petalas externas -->
+              <g
+                class="petal-outer petal-outer-0"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="45"
+                  rx="14"
+                  ry="26"
+                  fill="url(#petalGradient1)"
+                  transform="rotate(0 70 75) translate(0 -30)"
+                />
+              </g>
+              <g
+                class="petal-outer petal-outer-1"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="45"
+                  rx="14"
+                  ry="26"
+                  fill="url(#petalGradient2)"
+                  transform="rotate(45 70 75) translate(0 -30)"
+                />
+              </g>
+              <g
+                class="petal-outer petal-outer-2"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="45"
+                  rx="14"
+                  ry="26"
+                  fill="url(#petalGradient1)"
+                  transform="rotate(90 70 75) translate(0 -30)"
+                />
+              </g>
+              <g
+                class="petal-outer petal-outer-3"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="45"
+                  rx="14"
+                  ry="26"
+                  fill="url(#petalGradient2)"
+                  transform="rotate(135 70 75) translate(0 -30)"
+                />
+              </g>
+              <g
+                class="petal-outer petal-outer-4"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="45"
+                  rx="14"
+                  ry="26"
+                  fill="url(#petalGradient1)"
+                  transform="rotate(180 70 75) translate(0 -30)"
+                />
+              </g>
+              <g
+                class="petal-outer petal-outer-5"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="45"
+                  rx="14"
+                  ry="26"
+                  fill="url(#petalGradient2)"
+                  transform="rotate(225 70 75) translate(0 -30)"
+                />
+              </g>
+              <g
+                class="petal-outer petal-outer-6"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="45"
+                  rx="14"
+                  ry="26"
+                  fill="url(#petalGradient1)"
+                  transform="rotate(270 70 75) translate(0 -30)"
+                />
+              </g>
+              <g
+                class="petal-outer petal-outer-7"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="45"
+                  rx="14"
+                  ry="26"
+                  fill="url(#petalGradient2)"
+                  transform="rotate(315 70 75) translate(0 -30)"
+                />
+              </g>
+
+              <!-- Petalas internas -->
+              <g
+                class="petal-inner petal-inner-0"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="53"
+                  rx="10"
+                  ry="18"
+                  fill="#FFC0CB"
+                  opacity="0.9"
+                  transform="rotate(22.5 70 75) translate(0 -22)"
+                />
+              </g>
+              <g
+                class="petal-inner petal-inner-1"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="53"
+                  rx="10"
+                  ry="18"
+                  fill="#FFB6C1"
+                  opacity="0.9"
+                  transform="rotate(67.5 70 75) translate(0 -22)"
+                />
+              </g>
+              <g
+                class="petal-inner petal-inner-2"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="53"
+                  rx="10"
+                  ry="18"
+                  fill="#FFC0CB"
+                  opacity="0.9"
+                  transform="rotate(112.5 70 75) translate(0 -22)"
+                />
+              </g>
+              <g
+                class="petal-inner petal-inner-3"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="53"
+                  rx="10"
+                  ry="18"
+                  fill="#FFB6C1"
+                  opacity="0.9"
+                  transform="rotate(157.5 70 75) translate(0 -22)"
+                />
+              </g>
+              <g
+                class="petal-inner petal-inner-4"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="53"
+                  rx="10"
+                  ry="18"
+                  fill="#FFC0CB"
+                  opacity="0.9"
+                  transform="rotate(202.5 70 75) translate(0 -22)"
+                />
+              </g>
+              <g
+                class="petal-inner petal-inner-5"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="53"
+                  rx="10"
+                  ry="18"
+                  fill="#FFB6C1"
+                  opacity="0.9"
+                  transform="rotate(247.5 70 75) translate(0 -22)"
+                />
+              </g>
+              <g
+                class="petal-inner petal-inner-6"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="53"
+                  rx="10"
+                  ry="18"
+                  fill="#FFC0CB"
+                  opacity="0.9"
+                  transform="rotate(292.5 70 75) translate(0 -22)"
+                />
+              </g>
+              <g
+                class="petal-inner petal-inner-7"
+                style="transform-origin: 70px 75px"
+              >
+                <ellipse
+                  cx="70"
+                  cy="53"
+                  rx="10"
+                  ry="18"
+                  fill="#FFB6C1"
+                  opacity="0.9"
+                  transform="rotate(337.5 70 75) translate(0 -22)"
+                />
+              </g>
+
+              <!-- Centro da flor -->
+              <g class="flower-center">
+                <circle
+                  cx="70"
+                  cy="75"
+                  r="16"
+                  fill="url(#centerGradient)"
+                  filter="url(#glow)"
+                />
+                <circle cx="70" cy="75" r="10" fill="#FFB347" />
+                <circle cx="70" cy="75" r="5" fill="#FF8C00" />
+                <circle cx="66" cy="72" r="2" fill="#FFEC8B" opacity="0.8" />
+                <circle cx="74" cy="73" r="1.5" fill="#FFEC8B" opacity="0.6" />
+                <circle cx="70" cy="78" r="1" fill="#FFEC8B" opacity="0.5" />
+              </g>
+            </g>
+          </svg>
+
+          <!-- Particulas de brilho -->
+          <div class="sparkles" id="sparkles"></div>
+        </div>
+
+        <!-- Grama -->
+        <svg
+          class="grass"
+          width="200"
+          height="60"
+          viewBox="0 0 200 60"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            class="grass-blade sway-1"
+            d="M20 60 Q25 30, 15 5 Q20 35, 20 60"
+            fill="#2d5a27"
+          />
+          <path
+            class="grass-blade sway-2"
+            d="M35 60 Q30 25, 40 0 Q35 30, 35 60"
+            fill="#3d7a37"
+          />
+          <path
+            class="grass-blade sway-1"
+            d="M50 60 Q55 35, 45 10 Q50 40, 50 60"
+            fill="#4a8b42"
+          />
+          <path
+            class="grass-blade sway-3"
+            d="M65 60 Q60 20, 70 0 Q65 25, 65 60"
+            fill="#2d5a27"
+          />
+          <path
+            class="grass-blade sway-2"
+            d="M80 60 Q85 30, 75 5 Q80 35, 80 60"
+            fill="#3d7a37"
+          />
+          <path
+            class="grass-blade sway-1"
+            d="M95 60 Q90 25, 100 0 Q95 30, 95 60"
+            fill="#4a8b42"
+          />
+          <path
+            class="grass-blade sway-3"
+            d="M110 60 Q115 35, 105 8 Q110 40, 110 60"
+            fill="#2d5a27"
+          />
+          <path
+            class="grass-blade sway-2"
+            d="M125 60 Q120 20, 130 0 Q125 25, 125 60"
+            fill="#3d7a37"
+          />
+          <path
+            class="grass-blade sway-1"
+            d="M140 60 Q145 30, 135 5 Q140 35, 140 60"
+            fill="#4a8b42"
+          />
+          <path
+            class="grass-blade sway-3"
+            d="M155 60 Q150 25, 160 0 Q155 30, 155 60"
+            fill="#2d5a27"
+          />
+          <path
+            class="grass-blade sway-2"
+            d="M170 60 Q175 35, 165 10 Q170 40, 170 60"
+            fill="#3d7a37"
+          />
+          <path
+            class="grass-blade sway-1"
+            d="M185 60 Q180 20, 190 5 Q185 25, 185 60"
+            fill="#4a8b42"
+          />
+        </svg>
+      </div>
+
+      <button class="click-button" id="clickButton">clique aqui</button>
+
+      <div class="message" id="message">
+        <p class="message-title">Para voce, pessoa especial</p>
+        <p class="message-text">
+          Voce ilumina meus dias como o sol ilumina as flores.
+        </p>
+        <p class="message-highlight">Voce e incrivel!</p>
+      </div>
+    </div>
+
+    <script>
+      const flowerContainer = document.getElementById("flowerContainer");
+      const clickButton = document.getElementById("clickButton");
+      const message = document.getElementById("message");
+      const sparklesContainer = document.getElementById("sparkles");
+
+      let hasClicked = false;
+
+      clickButton.addEventListener("click", () => {
+        if (hasClicked) return;
+        hasClicked = true;
+
+        // Esconde o botao
+        clickButton.classList.add("hidden");
+
+        // Inicia a animacao da flor
+        flowerContainer.classList.add("visible");
+
+        // Fase 1: folhas (apos o caule crescer)
+        setTimeout(() => {
+          flowerContainer.classList.add("phase-1");
+        }, 800);
+
+        // Fase 2: botao da flor aparece
+        setTimeout(() => {
+          flowerContainer.classList.add("phase-2");
+        }, 1400);
+
+        // Fase 3: petalas desabrocham
+        setTimeout(() => {
+          flowerContainer.classList.add("phase-3");
+        }, 2000);
+
+        // Fase 4: flor completa com brilhos
+        setTimeout(() => {
+          flowerContainer.classList.add("phase-4");
+          createSparkles();
+        }, 3200);
+
+        // Mostra a mensagem
+        setTimeout(() => {
+          message.classList.add("visible");
+        }, 3800);
+      });
+
+      function createSparkles() {
+        const colors = ["#FFD700", "#FF69B4", "#FFFFFF", "#FFB6C1"];
+
+        for (let i = 0; i < 8; i++) {
+          const sparkle = document.createElement("div");
+          sparkle.className = "sparkle";
+
+          const size = 3 + Math.random() * 4;
+          sparkle.style.width = size + "px";
+          sparkle.style.height = size + "px";
+          sparkle.style.background = colors[i % colors.length];
+          sparkle.style.left = 20 + Math.random() * 100 + "px";
+          sparkle.style.top = -20 + Math.random() * 80 + "px";
+          sparkle.style.animationDelay = i * 0.3 + "s";
+          sparkle.style.boxShadow = "0 0 6px " + colors[i % colors.length];
+
+          sparklesContainer.appendChild(sparkle);
+        }
+      }
+    </script>
+  </body>
+</html>
